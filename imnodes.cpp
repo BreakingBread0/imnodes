@@ -1812,7 +1812,13 @@ static void MiniMapDrawNode(ImNodesEditorContext& editor, const int node_idx)
         mini_map_node_background = GImNodes->Style.Colors[ImNodesCol_MiniMapNodeBackground];
     }
 
-    const ImU32 mini_map_node_outline = GImNodes->Style.Colors[ImNodesCol_MiniMapNodeOutline];
+    ImU32 mini_map_node_outline = GImNodes->Style.Colors[ImNodesCol_MiniMapNodeOutline];
+
+    if (IsMiniMapHovered())
+    {
+        mini_map_node_outline = node.ColorStyle.Outline;
+        mini_map_node_background = node.ColorStyle.Titlebar;
+    }
 
     GImNodes->CanvasDrawList->AddRectFilled(
         node_rect.Min, node_rect.Max, mini_map_node_background, mini_map_node_rounding);
@@ -1843,10 +1849,13 @@ static void MiniMapDrawLink(ImNodesEditorContext& editor, const int link_idx)
         return;
     }
 
-    const ImU32 link_color =
+    ImU32 link_color =
         GImNodes->Style.Colors
             [editor.SelectedLinkIndices.contains(link_idx) ? ImNodesCol_MiniMapLinkSelected
                                                            : ImNodesCol_MiniMapLink];
+    if (IsMiniMapHovered()) {
+        link_color = link.ColorStyle.Base;
+    }
 
 #if IMGUI_VERSION_NUM < 18000
     GImNodes->CanvasDrawList->AddBezierCurve(
